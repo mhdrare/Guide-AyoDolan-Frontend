@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { Text, View, TextInput, TouchableOpacity, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
 import firebase from 'firebase'
+import Config from 'react-native-config'
 
 export default class App extends Component {
 	constructor(props) {
@@ -14,13 +15,13 @@ export default class App extends Component {
 	componentDidMount(){
 
 		let firebaseConfig = {
-			apiKey: "",
-			authDomain: "",
-			databaseURL: "",
-			projectId: "",
-			storageBucket: "",
-			messagingSenderId: "",
-			appId: ""
+			apiKey: '',
+			authDomain: '',
+			databaseURL: '',
+			projectId: '',
+			storageBucket: '',
+			messagingSenderId: '',
+			appId: ''
 		};
 		// Initialize Firebase
 		// if (!firebase.apps.length) {

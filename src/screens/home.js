@@ -48,21 +48,21 @@ export default class App extends Component {
 				<View style={component.menu}>
 					<View style={component.itemsMenu}>
 						<View style={component.menuChat}>
-							<Ionicons name="ios-list-box" size={40} style={{flex: 1, alignSelf: 'center'}}/>
+							<Ionicons name="ios-list-box" size={34} style={{flex: 1, alignSelf: 'center'}}/>
 							<Text style={{flex: 1, alignSelf: 'center'}}>Orders</Text>
 						</View>
 					</View>
 					<View style={component.itemsMenu}>
-						<View style={component.menuScan}>
-							<MaterialCommunityIcons name="qrcode-scan" size={40} style={{flex: 1, alignSelf: 'center'}}/>
+						<TouchableOpacity style={component.menuScan} onPress={() => this.props.navigation.navigate('Scanner')}>
+							<MaterialCommunityIcons name="qrcode-scan" size={34} style={{flex: 1, alignSelf: 'center'}}/>
 							<Text style={{flex: 1, alignSelf: 'center'}}>Scan</Text>
-						</View>
+						</TouchableOpacity>
 					</View>
 					<View style={component.itemsMenu}>
-						<View style={component.menuOpt}>
-							<SimpleLineIcons name="bubble" size={40} style={{flex: 1, alignSelf: 'center'}}/>
+						<TouchableOpacity style={component.menuOpt} onPress={() => this.props.navigation.navigate('Chat')}>
+							<SimpleLineIcons name="bubble" size={34} style={{flex: 1, alignSelf: 'center'}}/>
 							<Text style={{flex: 1, alignSelf: 'center'}}>Chat</Text>
-						</View>
+						</TouchableOpacity>
 					</View>
 				</View>
 			</React.Fragment>

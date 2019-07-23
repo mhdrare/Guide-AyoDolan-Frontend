@@ -4,6 +4,7 @@ import ForgotPassword from '../screens/auth/forgotPassword';
 import ConfirmCode from '../screens/auth/confirmCode';
 import NewPassword from '../screens/auth/newPassword';
 import Home from '../screens/home';
+import Scanner from '../screens/scanner';
 import AuthCheck from '../screens/authCheck';
 import Chat from '../screens/chat/index';
 import Personal from '../screens/chat/personal';
@@ -20,9 +21,9 @@ const AuthNavigator = createStackNavigator({
 
 const HomeNavigator = createStackNavigator({
 	Home,
-	// Chat,
+	Chat,
 	// Personal,
-	// Scanner
+	Scanner
 }, {
 	initialRouteName: 'Home',
 	headerMode: 'none'
