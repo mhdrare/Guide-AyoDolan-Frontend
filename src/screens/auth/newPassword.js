@@ -7,40 +7,20 @@ export default class App extends Component {
 		super(props);
 	
 		this.state = {
-			email: '',
-			password: '',
-			errEmail: '',
-			errPassword: '',
-			loading: ''
+			
 		};
 	}
 
 	changeEmail = (value) => {
-		this.setState({
-			email: value,
-			errEmail: ''
-		})
+		
 	}
 
 	changePassword = (value) => {
-		this.setState({
-			password: value,
-			errPassword: ''
-		})	
+		
 	}
 
 	loginHandler = () => {
-		this.setState({
-			loading:true
-		});
-
-		if (this.state.email.length < 6) {
-			this.setState({errEmail: 'Email is not valid', loading: false})
-		} else if (this.state.password.length < 6) {
-			this.setState({errPassword: 'Password too short', loading: false})
-		} else {
-			
-		}
+		
 	}
 
 	render(){
@@ -52,21 +32,15 @@ export default class App extends Component {
 					barStyle="dark-content"
 					backgroundColor="rgba(0,0,0,0)"
 				/>
-				<Text style={text.welcome}>Welcome to</Text>
-				<Text style={text.title}>{'Guide AyoDolan!'.toUpperCase()}</Text>
-				<Text style={text.continue}>Please Login to Continue</Text>
-
+				<Text style={text.welcome}>Forgot</Text>
+				<Text style={text.title}>Password ?</Text>
 				<View style={component.input}>
-					<TextInput placeholder="Email" style={component.email} onChangeText={this.changeEmail} keyboardType={'email-address'} />
-					{this.state.errEmail == '' ? <View/> : <Text style={text.validate}>{this.state.errEmail}</Text>}
-					<TextInput secureTextEntry={true} placeholder="********" style={component.password} onChangeText={this.changePassword} />
-					{this.state.errPassword == '' ? <View/> : <Text style={text.validate}>{this.state.errPassword}</Text>}
-
-					<TouchableOpacity style={component.button} onPress={this.loginHandler}>
-						<Text style={text.button}>{'Login'.toUpperCase()}</Text>
+					<TextInput secureTextEntry={true} placeholder="New Password" style={component.password}/>
+					<TextInput secureTextEntry={true} placeholder="Confirm New Password" style={component.password}/>
+					<TouchableOpacity style={component.button} >
+						<Text style={text.button}>{'Confirm Password'.toUpperCase()}</Text>
 					</TouchableOpacity>
 				</View>
-				<Text style={text.forgot} onPress={()=>this.props.navigation.navigate('ForgotPassword')}>{'Forgot password ?'.toUpperCase()}</Text>
 			</React.Fragment>
 		)
 	}
@@ -75,17 +49,18 @@ export default class App extends Component {
 const text = StyleSheet.create({
 	welcome: {
 		paddingTop: 50,
-		fontSize: 18,
+		fontSize: 34,
 		paddingLeft: 20,
-		fontFamily: 'sans-serif-light',
-	},
-	title: {
-		fontSize: 32,
-		paddingLeft: 18,
 		fontFamily: 'sans-serif-condensed'
 	},
-	continue: {
+	title: {
+		fontSize: 34,
+		paddingLeft: 20,
+		fontFamily: 'sans-serif-condensed'
+	},
+	description: {
 		fontSize: 14,
+		paddingBottom: 20,
 		paddingLeft: 20,
 		fontFamily: 'sans-serif-light',
 	},
@@ -101,14 +76,6 @@ const text = StyleSheet.create({
 		fontFamily: 'sans-serif-condensed',
 		fontWeight: '600'
 	},
-	validate: {
-		width: '70%',
-		paddingTop: 5,
-		paddingBottom: -5,
-		paddingLeft: 20,
-		fontSize: 12,
-		color: 'red'
-	}
 })
 
 const component = StyleSheet.create({
@@ -116,14 +83,14 @@ const component = StyleSheet.create({
 		alignSelf: 'center',
 		position: 'absolute',
 		height: 600,
-		top: -100,
+		bottom: -140,
 		backgroundColor: '#4dd0e1',
 		width: '150%',
 		borderRadius: 1200,
 		zIndex: -10,
 	},
 	input: {
-		paddingTop: 30,
+		paddingTop: 100,
 		alignSelf: 'center',
 		justifyContent: 'center',
 		width: '90%'
