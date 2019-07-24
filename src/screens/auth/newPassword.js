@@ -1,26 +1,58 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage, ActivityIndicator, StatusBar } from 'react-native'
 import firebase from 'firebase';
+import { newPassword } from '../../public/redux/actions/auth'
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 	
 		this.state = {
-			
+			id: this.props.navigation.state.params,
+			password: '',
+			confPassword: '',
+			errPassword: '',
+			errConfPassword: '',
 		};
 	}
 
-	changeEmail = (value) => {
-		
-	}
-
 	changePassword = (value) => {
-		
+		this.setState({
+			password: value
+		})	
 	}
 
-	loginHandler = () => {
-		
+	changeConfPassword = (value) => {
+		this.setState({
+			confPassword: value
+		})	
+	}
+
+	changeHandler = () => {
+		if (this.state.password !== this.state.confPassword) {
+			alert('Password not match!')
+		} else if (this.state.password < 6) {
+			alert('Password too short')
+		} else {
+			this.props.dispatch(newPassword({id: this.state.id, password: this.state.password, confPassword: this.state.confPassword}))
+			.then(()=>{
+        		this.setState({
+					loading: false
+				}, () => {
+        			this.props.navigation.navigate('Login')
+					alert('Change password successful!')
+				})
+        		
+        	})
+        	.catch((err)=>{
+        		this.setState({
+					loading: false
+				}, () => {
+        			alert('Unsuccessful!')
+				})
+        	})
+		}
 	}
 
 	render(){
@@ -35,9 +67,9 @@ export default class App extends Component {
 				<Text style={text.welcome}>Forgot</Text>
 				<Text style={text.title}>Password ?</Text>
 				<View style={component.input}>
-					<TextInput secureTextEntry={true} placeholder="New Password" style={component.password}/>
-					<TextInput secureTextEntry={true} placeholder="Confirm New Password" style={component.password}/>
-					<TouchableOpacity style={component.button} >
+					<TextInput secureTextEntry={true} placeholder="New Password" style={component.password} onChangeText={this.changePassword}/>
+					<TextInput secureTextEntry={true} placeholder="Confirm New Password" style={component.password} onChangeText={this.changeConfPassword}/>
+					<TouchableOpacity style={component.button} onPress={this.changeHandler}>
 						<Text style={text.button}>{'Confirm Password'.toUpperCase()}</Text>
 					</TouchableOpacity>
 				</View>
@@ -45,6 +77,8 @@ export default class App extends Component {
 		)
 	}
 }
+
+export default connect(state => ({auth: state.auth}))(App)
 
 const text = StyleSheet.create({
 	welcome: {

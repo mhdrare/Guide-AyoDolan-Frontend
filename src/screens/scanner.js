@@ -12,7 +12,7 @@ export default class App extends Component {
 	}
 
 	barcodeRecognized = ({ barcodes }) => {
-		barcodes.forEach(barcode => console.warn(barcode))
+		barcodes.forEach(barcode => console.log(barcode.data))
 	    // barcodes.forEach(barcode => this.setState({data: barcode.data}))
 	};
 

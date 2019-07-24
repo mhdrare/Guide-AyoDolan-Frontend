@@ -8,7 +8,7 @@ const initialState = {
 	isLogin: false
 }
 
-export default auth = async (state = initialState, action) => {
+export default auth = (state = initialState, action) => {
 	switch (action.type) {
 		case 'LOGIN_PENDING':
 			return {
@@ -18,15 +18,15 @@ export default auth = async (state = initialState, action) => {
                 isLogin: false,
 			}
 		case 'LOGIN_FULFILLED':
-			await AsyncStorage.setItem('Token', action.payload.data.token);
-			// await AsyncStorage.setItem('Login', state.isLogin);
-			console.log(state)
+			let users = action.payload.data.data[0].id_guide.toString()
+			AsyncStorage.setItem('Token', action.payload.data.token)
+			AsyncStorage.setItem('Id', users)
 			return {
 				...state,
 				isLoading: false,
 				isLogin: true,
 				token: action.payload.data.token,
-				data: action.payload.data.data
+				data: action.payload.data.data[0]
 			}
 		case 'LOGIN_REJECTED':
 			return {
@@ -35,18 +35,37 @@ export default auth = async (state = initialState, action) => {
                 isError: true,
                 isLogin: false,
 			}
-		case 'FORGET_PASSWORD_PENDING':
+		case 'FORGOT_PASSWORD_PENDING':
 			return {
 				...state,
 				isLoading: true,
                 isError: false
 			}
-		case 'FORGET_PASSWORD_FULFILLED':
+		case 'FORGOT_PASSWORD_FULFILLED':
 			return {
 				...state,
 				isLoading: false,
+				data: action.payload.data
 			}
-		case 'FORGET_PASSWORD_REJECTED':
+		case 'FORGOT_PASSWORD_REJECTED':
+			return {
+				...state,
+				isLoading: false,
+                isError: true
+			}
+		case 'NEW_PASSWORD_PENDING':
+			return {
+				...state,
+				isLoading: true,
+                isError: false
+			}
+		case 'NEW_PASSWORD_FULFILLED':
+			return {
+				...state,
+				isLoading: false,
+				data: action.payload.data
+			}
+		case 'NEW_PASSWORD_REJECTED':
 			return {
 				...state,
 				isLoading: false,

@@ -1,26 +1,53 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage, ActivityIndicator, StatusBar } from 'react-native'
 import firebase from 'firebase';
+import { forgotPassword } from '../../public/redux/actions/auth'
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 	
 		this.state = {
-			
+			email: '',
+			errEmail: ''
 		};
 	}
 
 	changeEmail = (value) => {
-		
+		this.setState({
+			email: value,
+			errEmail: ''
+		})
 	}
 
-	changePassword = (value) => {
-		
-	}
+	forgotHandler = async () => {
+		if (this.state.email == '') {
+			this.setState({
+				errEmail: 'Email is empty!'
+			})
+		} else {
+			await this.setState({
+				loading: true
+			})
 
-	forgotHandler = () => {
-		this.props.navigation.navigate('ConfirmCode')
+			this.props.dispatch(forgotPassword(this.state.email))
+			.then(() => {
+				this.setState({
+					loading: false
+				}, () => {
+					this.props.navigation.navigate('ConfirmCode')
+				})
+			})
+			.catch((err)=>{
+        		this.setState({
+					loading: false
+				}, () => {
+        			alert('Email not found!')
+				})
+        	})
+		}
+
 	}
 
 	render(){
@@ -36,7 +63,8 @@ export default class App extends Component {
 				<Text style={text.title}>Password ?</Text>
 				<View style={component.input}>
 					<Text style={text.description}>Enter the email address associated with your account.</Text>
-					<TextInput placeholder="Email" style={component.email} />
+					<TextInput placeholder="Email" style={component.email} onChangeText={this.changeEmail}/>
+					{this.state.errEmail == '' ? <View/> : <Text style={text.validate}>{this.state.errEmail}</Text>}
 					<TouchableOpacity style={component.button} onPress={this.forgotHandler}>
 						<Text style={text.button}>{'Send'.toUpperCase()}</Text>
 					</TouchableOpacity>
@@ -45,6 +73,8 @@ export default class App extends Component {
 		)
 	}
 }
+
+export default connect(state => ({auth: state.auth}))(App)
 
 const text = StyleSheet.create({
 	welcome: {
@@ -76,6 +106,14 @@ const text = StyleSheet.create({
 		fontFamily: 'sans-serif-condensed',
 		fontWeight: '600'
 	},
+	validate: {
+		width: '70%',
+		paddingTop: 5,
+		paddingBottom: -5,
+		paddingLeft: 20,
+		fontSize: 12,
+		color: 'red'
+	}
 })
 
 const component = StyleSheet.create({

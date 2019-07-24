@@ -1,21 +1,63 @@
 import React, {Component} from 'react'
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
+import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
+import OneSignal from 'react-native-onesignal'
+import { connect } from 'react-redux'
+import { fetchData } from '../public/redux/actions/users'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = { 
-			
+			id: 0
 		};
 	}
 
 	componentDidMount(){
+		AsyncStorage.getItem('Id', (error, result) => {
+			if(result){
+				this.setState({
+					id: result
+				})
+				this.props.dispatch(fetchData(this.state.id))
+			} else {
+				console.log(error)
+			}
+		})
 
+	}
+
+	logout = () => {
+    	AsyncStorage.removeItem('Token', (error) => {
+			if (error) {
+				alert(error)
+			} else {
+				this.props.navigation.navigate('AuthCheck');
+			}
+		})
+	}
+
+	logoutHandler = () => {
+		Alert.alert(
+            "Logout",
+            "Are you sure ?",
+            [
+                {
+                    text: "NO", onPress: () => {
+                    }
+                },
+                {
+                    text: "YES", onPress: () => {
+                        this.logout()
+                    }
+                }
+            ],
+            { cancelable: false }
+        )
 	}
 
 	render(){
@@ -24,6 +66,9 @@ export default class App extends Component {
 				<View style={component.header}>
 					<View style={component.itemsHeader}>
 						<Text style={component.items}>Home</Text>
+						<TouchableOpacity style={component.logout} onPress={this.logoutHandler}>
+							<Ionicons name="md-log-out" size={28} color="#c62828"/>
+						</TouchableOpacity>
 					</View>
 				</View>
 				<View style={component.body}>
@@ -33,15 +78,15 @@ export default class App extends Component {
 					<View style={items.top}>
 						<Image style={items.image} source={{uri: 'https://i.pinimg.com/originals/ed/a1/c0/eda1c044bca1e775d3a82dd524ca2321.jpg' }} />
 						<View style={items.itemsTop}>
-							<Text style={text.itemsName}>Guide AyoDolan!</Text>
-							<Text style={text.itemsPhone}>0822-2222-4444</Text>
-							<Text style={text.itemsPhone}>L (34)</Text>
+							<Text style={text.itemsName}>{this.props.users.data.guide_name}</Text>
+							<Text style={text.itemsPhone}>{this.props.users.data.no_phone}</Text>
+							<Text style={text.itemsPhone}>{this.props.users.data.gender} ({this.props.users.data.age})</Text>
 						</View>
 					</View>
 					<View style={items.bot}>
 						<View style={{flexDirection: 'row', alignItems: 'center'}}>
 							<Ionicons style={{flex: 1}} name="ios-pin" size={25}/>
-							<Text style={{flex: 9, color: '#fff'}}>DI Yogyakarta</Text>
+							<Text style={{flex: 9, color: '#fff'}}>{this.props.users.data.id_destination}</Text>
 						</View>
 					</View>
 				</View>
@@ -69,6 +114,8 @@ export default class App extends Component {
 		)
 	}
 }
+
+export default connect(state => ({users: state.users, auth: state.auth}))(App)
 
 const text = StyleSheet.create({
 	itemsName: {
@@ -124,12 +171,20 @@ const component = StyleSheet.create({
 	itemsHeader: {
 		height: 45,
 		justifyContent: 'center',
+		flexDirection: 'row'
 	},
 	items: {
 		fontSize: 24,
 		fontWeight: '600',
 		fontFamily: 'sans-serif-condensed',
-		paddingLeft: 25
+		paddingLeft: 25,
+		flex: 1
+	},
+	logout: {
+		flex: 1,
+		alignSelf: 'center',
+		alignItems: 'flex-end',
+		paddingRight: 20
 	},
 	body: {
 		marginTop: 80,

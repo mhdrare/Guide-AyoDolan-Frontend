@@ -1,22 +1,32 @@
 import axios from 'axios';
 
-const url = '';
+const url = 'https://ayodolanbackend.herokuapp.com/guide';
 
 export const login = (data) => {
 	return {
         type: 'LOGIN',
-        payload: axios.post(`${url}/authenticate`, {
-            user: data.username,
+        payload: axios.post(`${url}/login`, {
+            email: data.email,
             password: data.password,
         })
     }
 }
 
-export const forgetPassword = (email) => {
+export const forgotPassword = (email) => {
     return {
-        type: 'FORGET_PASSWORD',
-        payload: axios.post(`${url}/forgetpassword`, {
+        type: 'FORGOT_PASSWORD',
+        payload: axios.post(`${url}/mailer`, {
             email: email,
+        })
+    }
+}
+
+export const newPassword = (data) => {
+    return {
+        type: 'NEW_PASSWORD',
+        payload: axios.post(`${url}/change/${data.id}`, {
+            password: data.password,
+            newPassword: data.confPassword,
         })
     }
 }

@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage, ActivityIndicator, StatusBar } from 'react-native'
 import firebase from 'firebase';
+import { login } from '../../public/redux/actions/auth'
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 	
@@ -11,7 +13,7 @@ export default class App extends Component {
 			password: '',
 			errEmail: '',
 			errPassword: '',
-			loading: ''
+			loading: false
 		};
 	}
 
@@ -29,17 +31,32 @@ export default class App extends Component {
 		})	
 	}
 
-	loginHandler = () => {
+	loginHandler = (data) => {
 		this.setState({
 			loading:true
 		});
 
-		if (this.state.email.length < 6) {
+		if (this.state.email.length < 6 || this.state.email == '') {
 			this.setState({errEmail: 'Email is not valid', loading: false})
-		} else if (this.state.password.length < 6) {
+		} else if (this.state.password.length < 6 || this.state.password == '') {
 			this.setState({errPassword: 'Password too short', loading: false})
 		} else {
-			
+			this.props.dispatch(login({email: this.state.email, password: this.state.password}))
+			.then(()=>{
+        		this.setState({
+					loading: false
+				}, () => {
+        			this.props.navigation.navigate('Home');
+				})
+        		
+        	})
+        	.catch((err)=>{
+        		this.setState({
+					loading: false
+				}, () => {
+        			alert('Gagal login')
+				})
+        	})
 		}
 	}
 
@@ -71,6 +88,8 @@ export default class App extends Component {
 		)
 	}
 }
+
+export default connect(state => ({auth: state.auth}))(App)
 
 const text = StyleSheet.create({
 	welcome: {

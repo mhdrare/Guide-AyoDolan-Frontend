@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, AsyncStorage, ActivityIndicator, StatusBar } from 'react-native'
 import firebase from 'firebase';
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 	
@@ -12,11 +13,19 @@ export default class App extends Component {
 	}
 
 	changeCode = (value) => {
-		
+		this.setState({
+			code: value
+		})
 	}
 
 	confirmHandler = () => {
-		this.props.navigation.navigate('NewPassword')
+		if (this.state.code !== this.props.auth.data.kode) {
+			alert('Wrong token!')
+		} else if (this.state.code < 6) {
+			alert('Token must have 6 digit')
+		} else {
+			this.props.navigation.navigate('NewPassword', this.props.auth.data.id)
+		}
 	}
 
 	render(){
@@ -41,6 +50,14 @@ export default class App extends Component {
 		)
 	}
 }
+
+const mapStateToProps = (state) => {
+    return {
+        auth: state.auth,
+    }
+}
+
+export default connect(mapStateToProps)(App)
 
 const text = StyleSheet.create({
 	welcome: {

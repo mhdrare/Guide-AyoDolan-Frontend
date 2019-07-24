@@ -20,6 +20,7 @@ const AuthNavigator = createStackNavigator({
 })
 
 const HomeNavigator = createStackNavigator({
+	AuthCheck,
 	Home,
 	Chat,
 	// Personal,

@@ -2,14 +2,34 @@ import React, {Component} from 'react'
 import { Text, View, TextInput, TouchableOpacity, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
 import firebase from 'firebase'
 import Config from 'react-native-config'
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = { 
-			isLogin: true
+			isLogin: false
 		};
+
+		this._bootstrapAsync();
+	}
+
+	_bootstrapAsync = async () => {
+		await AsyncStorage.getItem('Token', (error, result) => {
+			if(result){
+				this.setState({
+					isLogin: true,
+					token: result
+				})
+				this.props.navigation.navigate('Home')
+			} else {
+				this.setState({
+					isLogin: false
+				})
+				this.props.navigation.navigate('Auth')
+			}
+		})
 	}
 
 	componentDidMount(){
@@ -31,12 +51,24 @@ export default class App extends Component {
 		// firebase.auth().onAuthStateChanged(user => {
 		// 	this.props.navigation.navigate(user ? 'Home' : 'Auth')
 		// })
-		if (this.state.isLogin) {
-			this.props.navigation.navigate('Home')
-		} else {
-			this.props.navigation.navigate('Auth')
-		}
+
+		this.willFocusSubscription = this.props.navigation.addListener(
+      	'willFocus',
+      		() => {
+        		this._bootstrapAsync();
+      		}
+    	);
+
+		// if (this.state.isLogin) {
+		// 	this.props.navigation.navigate('Home')
+		// } else {
+		// 	this.props.navigation.navigate('Auth')
+		// }
 	}
+
+	componentWillUnmount() {
+    	this.willFocusSubscription.remove();
+  	}
 
 	render(){
 		return(
@@ -48,3 +80,5 @@ export default class App extends Component {
 		)
 	}
 }
+
+export default connect(state=>({auth: state.auth, users: state.users}))(App)
