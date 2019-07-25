@@ -23,7 +23,7 @@ const HomeNavigator = createStackNavigator({
 	AuthCheck,
 	Home,
 	Chat,
-	// Personal,
+	Personal,
 	Scanner
 }, {
 	initialRouteName: 'Home',

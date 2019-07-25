@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
+import { FlatList, Text, View, TextInput, StyleSheet, TouchableOpacity, Alert, Image, StatusBar, ActivityIndicator, AsyncStorage } from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -7,28 +7,31 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import OneSignal from 'react-native-onesignal'
 import { connect } from 'react-redux'
 import { fetchData } from '../public/redux/actions/users'
+import { fetchHistory } from '../public/redux/actions/history'
+import moment from 'moment'
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 
 		this.state = { 
-			id: 0
+			id: 0,
+			order: 0,
 		};
 	}
 
 	componentDidMount(){
-		AsyncStorage.getItem('Id', (error, result) => {
+		AsyncStorage.getItem('Id', async (error, result) => {
 			if(result){
-				this.setState({
+				await this.setState({
 					id: result
 				})
-				this.props.dispatch(fetchData(this.state.id))
+				await this.props.dispatch(fetchData(this.state.id))
+				await this.props.dispatch(fetchHistory(this.state.id))
 			} else {
 				console.log(error)
 			}
 		})
-
 	}
 
 	logout = () => {
@@ -80,22 +83,22 @@ class App extends Component {
 						<View style={items.itemsTop}>
 							<Text style={text.itemsName}>{this.props.users.data.guide_name}</Text>
 							<Text style={text.itemsPhone}>{this.props.users.data.no_phone}</Text>
-							<Text style={text.itemsPhone}>{this.props.users.data.gender} ({this.props.users.data.age})</Text>
+							<Text style={text.itemsPhone}>{this.props.users.data.gender == 1 ? 'Laki-laki' : 'Perempuan'} ({this.props.users.data.age})</Text>
 						</View>
 					</View>
 					<View style={items.bot}>
 						<View style={{flexDirection: 'row', alignItems: 'center'}}>
 							<Ionicons style={{flex: 1}} name="ios-pin" size={25}/>
-							<Text style={{flex: 9, color: '#fff'}}>{this.props.users.data.id_destination}</Text>
+							<Text style={{flex: 9, color: '#fff'}}>Yogyakarta</Text>
 						</View>
 					</View>
 				</View>
 				<View style={component.menu}>
 					<View style={component.itemsMenu}>
-						<View style={component.menuChat}>
+						<TouchableOpacity style={component.menuChat} onPress={() => this.setState({order: 1})}>
 							<Ionicons name="ios-list-box" size={34} style={{flex: 1, alignSelf: 'center'}}/>
 							<Text style={{flex: 1, alignSelf: 'center'}}>Orders</Text>
-						</View>
+						</TouchableOpacity>
 					</View>
 					<View style={component.itemsMenu}>
 						<TouchableOpacity style={component.menuScan} onPress={() => this.props.navigation.navigate('Scanner')}>
@@ -103,19 +106,38 @@ class App extends Component {
 							<Text style={{flex: 1, alignSelf: 'center'}}>Scan</Text>
 						</TouchableOpacity>
 					</View>
-					<View style={component.itemsMenu}>
-						<TouchableOpacity style={component.menuOpt} onPress={() => this.props.navigation.navigate('Chat')}>
-							<SimpleLineIcons name="bubble" size={34} style={{flex: 1, alignSelf: 'center'}}/>
-							<Text style={{flex: 1, alignSelf: 'center'}}>Chat</Text>
-						</TouchableOpacity>
-					</View>
+				</View>
+				<View style={{flex: 1, width: '100%'}}>
+					<FlatList
+						style={{paddingLeft: 15, paddingRight: 15}}
+						data={this.props.history.data}
+						keyExtractor={(item) => item.id_order.toString()}
+						renderItem={({item}) => {
+				            return (
+				                <TouchableOpacity activeOpacity={0.8} style={{flex: 1}}>
+				                	<View style={component.card}>
+				                		<View style={{flexDirection: 'row', flex: 1}}>
+											<Text style={{flex: 1, fontSize: 18, fontFamily: 'sans-serif-thin'}}>{item.id_transaksi}</Text>
+											<Text style={{flex: 1, textAlign: 'right', fontSize: 18, fontFamily: 'sans-serif-condensed'}}>{item.nama_user}</Text>
+				                		</View>
+				                		<View style={{flexDirection: 'row', flex: 1}}>
+											<Text style={{flex: 1, fontSize: 15}}>{item.order_status == 0 ? 'Pending' : 'Success'}</Text>
+											<Text style={{flex: 1, textAlign: 'right', fontSize: 15, fontFamily: 'sans-serif-thin'}}>{moment(item.date).format('DD/MM/YYYY')}</Text>
+										</View>
+										<TouchableOpacity style={{flex: 1, backgroundColor: '#0277bd', padding: 5, borderRadius: 3}} onPress={() => this.props.navigation.navigate('Personal', item)}>
+											<Text style={{flex: 1, textAlign: 'center', fontSize: 16, fontFamily: 'sans-serif-medium', color: '#fff'}}>Chat</Text>
+										</TouchableOpacity>
+				                	</View>
+								</TouchableOpacity>
+				            )
+				        }} />
 				</View>
 			</React.Fragment>
 		)
 	}
 }
 
-export default connect(state => ({users: state.users, auth: state.auth}))(App)
+export default connect(state => ({users: state.users, auth: state.auth, history: state.history}))(App)
 
 const text = StyleSheet.create({
 	itemsName: {
@@ -220,5 +242,11 @@ const component = StyleSheet.create({
 		height: 90,
 		width: '80%',
 		alignSelf: 'center',
+	},
+	card: {
+		borderColor: '#f2f2f2',
+		borderTopWidth: 0.3,
+		borderBottomWidth: 0.3,
+		padding: 5
 	}
 })
