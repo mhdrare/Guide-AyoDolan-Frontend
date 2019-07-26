@@ -1,21 +1,35 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, FlatList } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import { getScan, updateScan } from '../public/redux/actions/scan'
+import { connect } from 'react-redux'
 
-export default class App extends Component {
+class App extends Component {
 	constructor(props) {
 		super(props);
 	
 		this.state = {
-			idTransc: ''
+			idTransc: '',
+			foundID: false,
 		};
 	}
 
-	barcodeRecognized = ({ barcodes }) => {
-		barcodes.forEach(barcode => console.warn(barcode.data))
-	    // await barcodes.forEach(barcode => this.setState({idTransc: barcode.data}))
-	    // await this.props.dispatch(getScan(this.state.idTransc))
+	barcodeRecognized = async ({ barcodes }) => {
+	    if (!this.state.foundID) {
+	    	await console.log(barcodes.forEach(barcode => this.setState({idTransc: barcode.data, foundID: true})))
+	    	await this.props.dispatch(getScan(this.state.idTransc))
+	    }
 	};
+
+	updateHandler = () => {
+		if (this.state.idTransc == '') {
+			alert('USER NOT FOUND!')
+		} else {
+			this.props.dispatch(updateScan(this.state.idTransc))
+			this.props.navigation.goBack()
+			alert('Sukses!')
+		}
+	}
 
 	render(){
 		return(
@@ -32,28 +46,17 @@ export default class App extends Component {
 				>
 					
 				</RNCamera>
-				<View  style={{flex: 1, backgroundColor: '#f2f2f2'}}>
+				<View style={{flex: 1, backgroundColor: '#f2f2f2'}}>
 					<FlatList
-						data = {
-							[
-								{
-									id_order: 2,
-									name: 'M Faisal A',
-									no_phone: '081322224444',
-									destination: 'Prambanan',
-									date: '10-10-2019',
-									status: 'Pending'
-								}
-							]
-						}
-						keyExtractor = {(item) => item.id_order}
+						data = { this.props.scan.data }
+						keyExtractor = {(item) => item.id_order.toString()}
 						style={{flex: 1, width: '100%', height: '100%'}}
 						renderItem = {({item, index}) => {
 							return (
 							<React.Fragment>
 								<View style={component.order}>
 									<Text style={text.title}>{'Id Transc'.toUpperCase()}</Text>
-									<Text style={text.description}>{item.id_order}</Text>
+									<Text style={text.description}>{item.id_transaksi}</Text>
 								</View>
 								<View style={component.row}>
 									<View style={component.name}>
@@ -62,7 +65,7 @@ export default class App extends Component {
 									</View>
 									<View style={component.date}>
 										<Text style={text.rightTitle}>{'Date'.toUpperCase()}</Text>
-										<Text style={text.rightDesc}>{item.date}</Text>
+										<Text style={text.rightDesc}>{item.no_phone}</Text>
 									</View>
 								</View>
 							</React.Fragment>
@@ -71,13 +74,21 @@ export default class App extends Component {
 					}>
 					</FlatList>
 				</View>
-					<TouchableOpacity style={component.confirmation}>
-						<Text style={text.confirmation}>Confirmation</Text>
-					</TouchableOpacity>
+				<TouchableOpacity style={component.confirmation} onPress={this.updateHandler}>
+					<Text style={text.confirmation}>Confirmation</Text>
+				</TouchableOpacity>
 			</React.Fragment>
 		)
 	}
 }
+
+const mapStateToProps = (state) => {
+    return {
+        scan: state.scan,
+    }
+}
+
+export default connect(mapStateToProps)(App)
 
 const text = StyleSheet.create({
 	confirmation: {

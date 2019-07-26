@@ -12,7 +12,9 @@ export const getScan = (idTransc) => {
 
 export const updateScan = (idTransc) => {
 	return {
-        type: 'SCANNER',
-        payload: axios.get(`${urlUpdate}?idTransaksi=${idTransc}`)
+        type: 'UPDATE_SCANNER',
+        payload: axios.patch(`${urlUpdate}?idTransaksi=${idTransc}`, {
+        	order_status: 1
+        })
     }
 }
