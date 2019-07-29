@@ -17,3 +17,10 @@
     <img src="https://img.shields.io/badge/firebase-6.3.1-9cf.svg?style=flat-square" alt="axios version">
   </a>
 </div>
+
+### What is Guide AyoDolan?
+Guide AyoDolan is an application specifically for guides. Part of the AyoDolan application.
+
+### Feature
+* Scan QRCode
+* Chat with Customer
